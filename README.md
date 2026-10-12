@@ -1,4 +1,4 @@
-# PcapSleuth 🔍
+# live_pcap_forensics_analyzer 🔍
 
 **외부 라이브러리 없이 Python 표준 라이브러리만으로 만든 PCAP 네트워크 포렌식 분석기**
 
@@ -24,17 +24,17 @@ C2 비커닝, ARP 스푸핑, 평문 자격증명 노출)을 자동 탐지하고,
 ## 빠른 시작
 
 ```bash
-git clone https://github.com/solmin111/pcap-sleuth.git
-cd pcap-sleuth
+git clone https://github.com/solmin111/live-pcap_forensics_analyzer.git
+cd live-pcap_forensics_analyzer
 
 # (선택) 합성 샘플 생성 — 저장소에 이미 포함되어 있음
 python tools/make_samples.py
 
 # 종합 샘플 분석
-python -m pcapsleuth samples/99_mixed.pcap -v
+python -m live_pcap_forensics_analyzer samples/99_mixed.pcap -v
 
 # IOC 매칭 + 리포트 저장
-python -m pcapsleuth samples/99_mixed.pcap --ioc iocs_example.txt \
+python -m live_pcap_forensics_analyzer samples/99_mixed.pcap --ioc iocs_example.txt \
     --html report.html --json report.json --csv sessions.csv
 ```
 

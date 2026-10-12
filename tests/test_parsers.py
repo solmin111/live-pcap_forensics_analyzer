@@ -8,10 +8,10 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from pcapsleuth import craft, dnsparse, httpparse
-from pcapsleuth.layers import decode
-from pcapsleuth.pcapio import RawPacket, read_packets, write_pcap
-from pcapsleuth.sessions import SessionTable
+from live_pcap_forensics_analyzer import craft, dnsparse, httpparse
+from live_pcap_forensics_analyzer.layers import decode
+from live_pcap_forensics_analyzer.pcapio import RawPacket, read_packets, write_pcap
+from live_pcap_forensics_analyzer.sessions import SessionTable
 
 
 def _tmp(data: bytes) -> str:

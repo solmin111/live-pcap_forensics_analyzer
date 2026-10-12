@@ -1,8 +1,8 @@
-"""PcapSleuth CLI.
+"""live_pcap_forensics_analyzer CLI.
 
 사용 예:
-    python -m pcapsleuth capture.pcap
-    python -m pcapsleuth capture.pcap --ioc iocs.txt --html report.html -v
+    python -m live_pcap_forensics_analyzer capture.pcap
+    python -m live_pcap_forensics_analyzer capture.pcap --ioc iocs.txt --html report.html -v
 
 종료 코드: 0=이상 없음, 1=오류, 2=high/critical 탐지 존재 (배치 자동화용)
 """
@@ -19,7 +19,7 @@ from . import report
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="pcapsleuth",
+        prog="live-pcap_forensics_analyzer",
         description="PCAP/PCAPNG 네트워크 포렌식 분석기 (표준 라이브러리만 사용)",
     )
     p.add_argument("pcap", help="분석할 .pcap / .pcapng 파일")

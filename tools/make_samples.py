@@ -13,8 +13,8 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from pcapsleuth import craft
-from pcapsleuth.pcapio import write_pcap
+from live_pcap_forensics_analyzer import craft
+from live_pcap_forensics_analyzer.pcapio import write_pcap
 
 SAMPLES = os.path.join(os.path.dirname(__file__), "..", "samples")
 BASE_TS = 1760227200.0  # 2025-10-12 00:00:00 UTC 근처의 고정 기준시각
