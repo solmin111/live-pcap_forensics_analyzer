@@ -155,12 +155,30 @@ def _iter_options(buf: bytes, endian: str):
         off += (length + 3) & ~3  # 4바이트 패딩
 
 
+class PcapWriter:
+    """패킷을 받는 즉시 기록하는 스트리밍 pcap 라이터 (라이브 모드 증거 저장용)."""
+
+    def __init__(self, path: str, linktype: int = LINKTYPE_ETHERNET):
+        self._f = open(path, "wb")
+        self._f.write(struct.pack("<IHHiIII", PCAP_MAGIC_US, 2, 4, 0, 0, 65535, linktype))
+        self.count = 0
+
+    def write(self, ts: float, data: bytes) -> None:
+        sec = int(ts)
+        usec = int(round((ts - sec) * 1e6))
+        self._f.write(struct.pack("<IIII", sec, usec, len(data), len(data)))
+        self._f.write(data)
+        self.count += 1
+
+    def close(self) -> None:
+        self._f.close()
+
+
 def write_pcap(path: str, packets, linktype: int = LINKTYPE_ETHERNET) -> None:
     """(ts, bytes) 목록을 리틀엔디언 마이크로초 pcap으로 저장 (샘플 생성용)."""
-    with open(path, "wb") as f:
-        f.write(struct.pack("<IHHiIII", PCAP_MAGIC_US, 2, 4, 0, 0, 65535, linktype))
+    w = PcapWriter(path, linktype)
+    try:
         for ts, data in packets:
-            sec = int(ts)
-            usec = int(round((ts - sec) * 1e6))
-            f.write(struct.pack("<IIII", sec, usec, len(data), len(data)))
-            f.write(data)
+            w.write(ts, data)
+    finally:
+        w.close()
