@@ -3,8 +3,8 @@
 사용 예:
     python -m live_pcap_forensics_analyzer capture.pcap                  # 파일 분석
     python -m live_pcap_forensics_analyzer capture.pcap --ioc iocs.txt --html report.html -v
-    python -m live_pcap_forensics_analyzer --live                        # 실시간 탐지 (자동 모드)
-    python -m live_pcap_forensics_analyzer --live --save evidence.pcap   # 캡처 증거 저장(관리자)
+    python -m live_pcap_forensics_analyzer --live                        # 실시간 탐지 (관리자 필요)
+    python -m live_pcap_forensics_analyzer --live --save evidence.pcap   # 캡처 증거 저장
 
 종료 코드: 0=이상 없음, 1=오류, 2=high/critical 탐지 존재 (배치 자동화용)
 """
@@ -34,15 +34,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     g = p.add_argument_group("실시간 탐지 (본인 소유/관리 호스트 전용)")
     g.add_argument("--live", action="store_true",
-                   help="실시간 탐지 모드 (관리자=패킷 모드, 미승격=플로우 모드 자동)")
-    g.add_argument("--mode", choices=("auto", "packet", "flow"), default="auto",
-                   help="라이브 방식 강제 지정 (기본: auto)")
+                   help="실시간 패킷 탐지 모드 (관리자 권한 세션 필요)")
     g.add_argument("--duration", type=float, default=0, metavar="SEC",
                    help="감시 시간(초). 0이면 Ctrl+C 까지 (기본 0)")
     g.add_argument("--sweep", type=float, default=10, metavar="SEC",
                    help="탐지 스윕 주기(초, 기본 10)")
     g.add_argument("--save", metavar="FILE",
-                   help="패킷 모드에서 수신 패킷을 pcap으로 저장 (증거 보존)")
+                   help="수신 패킷을 pcap으로 저장 (증거 보존, 파일 모드로 재분석 가능)")
     return p
 
 
@@ -51,7 +49,7 @@ def main(argv=None) -> int:
 
     if args.live:
         from .live import run_live
-        return run_live(args.mode, args.duration, args.sweep, args.ioc, args.save)
+        return run_live(args.duration, args.sweep, args.ioc, args.save)
     if not args.pcap:
         build_parser().print_usage(sys.stderr)
         print("오류: pcap 파일을 지정하거나 --live 를 사용하세요", file=sys.stderr)

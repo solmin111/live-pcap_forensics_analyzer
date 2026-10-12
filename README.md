@@ -57,25 +57,23 @@ python -m live_pcap_forensics_analyzer samples/99_mixed.pcap --ioc iocs_example.
 > 자기 PC를 지나는 트래픽을 감시하는 방어·학습용 기능입니다.
 
 ```bash
-python -m live_pcap_forensics_analyzer --live                       # 권한 자동 감지
+python -m live_pcap_forensics_analyzer --live                       # 실시간 감시 시작
 python -m live_pcap_forensics_analyzer --live --save evidence.pcap  # 캡처 증거 저장
 python -m live_pcap_forensics_analyzer --live --ioc iocs_example.txt --sweep 5 --duration 300
 ```
 
-권한에 따라 두 방식 중 하나로 동작합니다 (`--mode packet|flow` 로 강제 지정 가능).
+**관리자 권한 세션이 필요합니다** — 터미널을 "관리자 권한으로 실행"으로 연 뒤 실행하세요.
+미승격 세션에서 실행하면 안내 메시지와 함께 즉시 종료합니다(종료 코드 1).
 
-| | A. 패킷 모드 | B. 플로우 모드 |
-|---|---|---|
-| 요구 권한 | **관리자 권한으로 실행** (설치물 없음) | 없음 (자동 폴백) |
-| 수집 방법 | Windows raw socket(`SIO_RCVALL`)으로 IPv4 패킷 수신 | `netstat` 연결 테이블 + DNS 클라이언트 캐시 폴링 |
-| 탐지 범위 | 파일 분석과 동일 (ARP 스푸핑 제외 — 이더넷 계층 없음) | 비커닝 · 아웃바운드 스캔 · IOC 접촉 · DGA 의심 캐시 |
-| 증거 보존 | `--save` 로 pcap 저장 → 파일 모드로 재분석 가능 | 없음 (연결 메타데이터만) |
+| 항목 | 내용 |
+|---|---|
+| 수집 방법 | Windows raw socket(`SIO_RCVALL`)으로 기본 인터페이스의 IPv4 패킷 수신 — **Npcap 등 설치물 불필요** |
+| 탐지 범위 | 파일 분석과 동일한 파이프라인·탐지기 재사용 (단, 이더넷 계층이 없어 ARP 스푸핑만 제외) |
+| 증거 보존 | `--save` 로 수신 패킷을 pcap 에 실시간 기록 → 나중에 파일 모드로 재분석 가능 |
 
-탐지 스윕은 `--sweep` 초마다 돌고, 같은 탐지는 한 번만 알립니다. `--duration 0`(기본)이면
-Ctrl+C 로 멈출 때까지 감시하며, 종료 시 누적 탐지 수에 따라 종료 코드를 돌려줍니다.
-
-패킷 모드도 라이브러리 설치가 전혀 필요 없습니다 — Npcap 없이 OS의 raw socket 기능만 씁니다.
-단 루프백(127.0.0.1) 트래픽은 보이지 않고, 기본적으로 기본 라우트 인터페이스의 IPv4만 수신합니다.
+탐지 스윕은 `--sweep` 초(기본 10)마다 돌고, 같은 탐지는 한 번만 알립니다.
+`--duration 0`(기본)이면 Ctrl+C 로 멈출 때까지 감시하며, 종료 시 누적 탐지 수에 따라
+종료 코드를 돌려줍니다. 루프백(127.0.0.1) 트래픽은 보이지 않습니다.
 
 ## 아키텍처
 
@@ -143,8 +141,7 @@ TCP 순서 교정·재전송 중복 제거, 그리고 시나리오별 탐지 종
 
 - 모든 패킷을 메모리에 올리므로 수 GB 캡처는 분할 후 분석 권장
 - 암호화 트래픽(TLS/SSH)은 내용 대신 연결 패턴(주기성, 반복)으로만 판단
-- 라이브 패킷 모드는 Windows 전용(raw socket SIO_RCVALL)이며 관리자 권한 필요. ARP·루프백·IPv6은 미수신
-- 라이브 플로우 모드는 페이로드가 없어 연결 패턴 기반 탐지만 가능
+- 실시간 모드는 Windows 전용(raw socket SIO_RCVALL)이며 관리자 권한 필수. ARP·루프백·IPv6은 미수신
 - 시그니처 기반 웹 공격 탐지는 우회 가능 — 학습용 기준선으로 이해할 것
 
 ## 라이선스
