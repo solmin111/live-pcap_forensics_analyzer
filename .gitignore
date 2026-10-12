@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+report.html
+report.json
+sessions.csv
+*.pcapng
